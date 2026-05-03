@@ -1,11 +1,11 @@
-// ScholarshipCard.jsx - KODI I PLOTË I PËRDITËSUAR
+// ScholarshipCard.jsx - KODI I PLOTË ME EVENTE TË AVANCUARA PËR GA
 
 import { useNavigate } from 'react-router-dom';
 import { Heart, Calendar, MapPin, BookOpen, Clock, ChevronRight, Share2, Check, Link as LinkIcon, Mail, ExternalLink, Award } from 'lucide-react';
 import { FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 import toast from 'react-hot-toast';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ReactGA from 'react-ga4';
 
 const ScholarshipCard = ({ scholarship, index }) => {
@@ -14,6 +14,26 @@ const ScholarshipCard = ({ scholarship, index }) => {
   const [isShareOpen, setIsShareOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [viewStartTime, setViewStartTime] = useState(null);
+
+  // Gjurmo kohën e shikimit të kartelës
+  useEffect(() => {
+    if (isHovered) {
+      setViewStartTime(Date.now());
+    } else if (viewStartTime) {
+      const viewDuration = Math.round((Date.now() - viewStartTime) / 1000);
+      if (viewDuration >= 5) { // Vetëm nëse shikohet për 5+ sekonda
+        ReactGA.event({
+          category: 'Scholarship',
+          action: 'Card View Duration',
+          label: scholarship.title,
+          value: viewDuration,
+          nonInteraction: true
+        });
+      }
+      setViewStartTime(null);
+    }
+  }, [isHovered, scholarship.title, viewStartTime]);
 
   const getDeadlineStatus = (deadline) => {
     if (!deadline || deadline === 'Check announcement' || deadline === 'Check website') {
@@ -35,7 +55,6 @@ const ScholarshipCard = ({ scholarship, index }) => {
   const getShortDuration = (duration) => {
     if (!duration || duration === 'Check announcement') return null;
     
-    // Modelet e tekstit të shkurtër që duam të nxjerrim
     const shortPatterns = [
       /(\d+)\s*[-–]\s*(\d+)\s*(months?|years?|weeks?)/i,
       /(\d+)\s*(months?|years?|weeks?)/i,
@@ -52,19 +71,18 @@ const ScholarshipCard = ({ scholarship, index }) => {
       }
     }
     
-    // Nëse nuk gjen ndonjë pattern, merr 60 karakteret e para
     return duration.length > 60 ? duration.substring(0, 60) + '...' : duration;
   };
 
   const handleCardClick = () => {
-    if (typeof ReactGA?.ga === 'function') {
-      ReactGA.event({
-        category: 'Scholarship',
-        action: 'View Details',
-        label: scholarship.title,
-        value: scholarship.id
-      });
-    }
+    ReactGA.event({
+      category: 'Scholarship',
+      action: 'View Details',
+      label: scholarship.title,
+      value: scholarship.id,
+      dimension1: scholarship.source_name, // Burimi i bursës
+      dimension2: scholarship.level?.join(', ') // Nivelet
+    });
     navigate(`/scholarship/${scholarship.id}`);
   };
 
@@ -72,14 +90,13 @@ const ScholarshipCard = ({ scholarship, index }) => {
     e.stopPropagation();
     setIsFavorite(!isFavorite);
     
-    if (typeof ReactGA?.ga === 'function') {
-      ReactGA.event({
-        category: 'Scholarship',
-        action: isFavorite ? 'Remove from Favorites' : 'Add to Favorites',
-        label: scholarship.title,
-        value: scholarship.id
-      });
-    }
+    ReactGA.event({
+      category: 'Engagement',
+      action: isFavorite ? 'Remove from Favorites' : 'Add to Favorites',
+      label: scholarship.title,
+      value: scholarship.id,
+      dimension1: scholarship.source_name
+    });
     
     toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
   };
@@ -88,14 +105,12 @@ const ScholarshipCard = ({ scholarship, index }) => {
     e.stopPropagation();
     setIsShareOpen(!isShareOpen);
     
-    if (typeof ReactGA?.ga === 'function') {
-      ReactGA.event({
-        category: 'Scholarship',
-        action: 'Open Share Menu',
-        label: scholarship.title,
-        value: scholarship.id
-      });
-    }
+    ReactGA.event({
+      category: 'Engagement',
+      action: 'Open Share Menu',
+      label: scholarship.title,
+      value: scholarship.id
+    });
   };
 
   const copyToClipboard = async (e) => {
@@ -105,14 +120,13 @@ const ScholarshipCard = ({ scholarship, index }) => {
       await navigator.clipboard.writeText(url);
       setCopied(true);
       
-      if (typeof ReactGA?.ga === 'function') {
-        ReactGA.event({
-          category: 'Share',
-          action: 'Copy Link',
-          label: scholarship.title,
-          value: scholarship.id
-        });
-      }
+      ReactGA.event({
+        category: 'Share',
+        action: 'Copy Link',
+        label: scholarship.title,
+        value: scholarship.id,
+        dimension1: 'clipboard'
+      });
       
       toast.success('Link copied to clipboard!');
       setTimeout(() => setCopied(false), 2000);
@@ -126,14 +140,13 @@ const ScholarshipCard = ({ scholarship, index }) => {
     const url = `${window.location.origin}/scholarship/${scholarship.id}`;
     const text = `Check out this scholarship: ${scholarship.title}`;
     
-    if (typeof ReactGA?.ga === 'function') {
-      ReactGA.event({
-        category: 'Share',
-        action: `Share to ${platform}`,
-        label: scholarship.title,
-        value: scholarship.id
-      });
-    }
+    ReactGA.event({
+      category: 'Share',
+      action: `Share to ${platform}`,
+      label: scholarship.title,
+      value: scholarship.id,
+      dimension1: platform
+    });
     
     let shareUrl = '';
     switch (platform) {
@@ -163,14 +176,14 @@ const ScholarshipCard = ({ scholarship, index }) => {
   const handleApplyClick = (e) => {
     e.stopPropagation();
     
-    if (typeof ReactGA?.ga === 'function') {
-      ReactGA.event({
-        category: 'Scholarship',
-        action: 'Click Apply Now',
-        label: scholarship.title,
-        value: scholarship.id
-      });
-    }
+    ReactGA.event({
+      category: 'Conversion',
+      action: 'Click Apply Now',
+      label: scholarship.title,
+      value: scholarship.id,
+      dimension1: scholarship.source_name,
+      dimension2: scholarship.official_link || scholarship.contact_website
+    });
     
     window.open(scholarship.official_link || scholarship.contact_website, '_blank');
   };
