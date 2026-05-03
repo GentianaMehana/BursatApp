@@ -1,7 +1,8 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = 'https://xmwqdnlfcptzqqhayfkd.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhtd3FkbmxmY3B0enFxaGF5ZmtkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3ODc2MjksImV4cCI6MjA5MDM2MzYyOX0.buOmnTN1k2s438e_XGskGO4mLHB_127dXgHpsFTvz0c'
+// Përdor environment variables për Netlify (zhvillim lokal)
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
