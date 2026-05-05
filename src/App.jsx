@@ -1,3 +1,4 @@
+// src/App.jsx
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
@@ -11,12 +12,10 @@ import Contact from './pages/Contact';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import './index.css';
 
-// Komponenti për të gjurmuar ndryshimet e faqes
 function RouteChangeTracker() {
   const location = useLocation();
 
   useEffect(() => {
-    // Dërgo pageview sa herë që ndryshon rruga
     if (typeof ReactGA.ga === 'function') {
       ReactGA.send({ 
         hitType: "pageview", 

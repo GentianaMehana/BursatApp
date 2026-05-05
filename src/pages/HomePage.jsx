@@ -1,3 +1,4 @@
+// src/pages/HomePage.jsx
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
@@ -7,6 +8,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import FilterBar from '../components/FilterBar';
 import Pagination from '../components/Pagination';
 import Footer from '../components/Footer';
+import EmailModal from '../components/EmailModal';
 
 const HomePage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,21 +16,20 @@ const HomePage = () => {
   const [filteredScholarships, setFilteredScholarships] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
+  const [showModal, setShowModal] = useState(false);
   const [filters, setFilters] = useState({
     search: '',
     level: 'all',
     field_of_study: 'all',
-    show_inactive: true  // ← Ndryshuar nga false në true për të marrë TË GJITHA
+    show_inactive: true
   });
   
   const scholarshipsPerPage = 9;
 
-  // Get unique fields of study from scholarships
   const fieldOptions = [...new Set(
     scholarships.flatMap(s => s.field_of_study || [])
   )].filter(f => f && f !== 'Check announcement').sort();
 
-  // Read level from URL parameter
   useEffect(() => {
     const levelParam = searchParams.get('level');
     if (levelParam && levelParam !== 'all') {
@@ -51,14 +52,11 @@ const HomePage = () => {
       setLoading(true);
       let query = supabase.from('bursat').select('*');
       
-      // VETËM nëse show_inactive është false, filtro vetëm aktive
-      // Nëse show_inactive = true, merr TË GJITHA bursat (aktive dhe joaktive)
       if (!filters.show_inactive) {
         query = query.eq('is_active', true);
       }
-      // Përndryshe (show_inactive = true), merr të gjitha pa filtër
       
-      const { data, error } = await query;
+      const { data, error } = await query.order('last_scraped', { ascending: false });
 
       if (error) throw error;
       setScholarships(data || []);
@@ -69,7 +67,6 @@ const HomePage = () => {
     }
   };
 
-  // Helper function for partial match on fields
   const matchesFieldOfStudy = (scholarshipFields, selectedField) => {
     if (!scholarshipFields || scholarshipFields.length === 0) return false;
     if (selectedField === 'all') return true;
@@ -105,7 +102,6 @@ const HomePage = () => {
   const applyFilters = () => {
     let filtered = [...scholarships];
 
-    // Search filter
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
       filtered = filtered.filter(s =>
@@ -114,7 +110,6 @@ const HomePage = () => {
       );
     }
 
-    // Level filter
     if (filters.level !== 'all') {
       filtered = filtered.filter(s => {
         if (!s.level || s.level.length === 0) return false;
@@ -122,7 +117,6 @@ const HomePage = () => {
       });
     }
 
-    // Field of study filter - WITH PARTIAL MATCH
     if (filters.field_of_study !== 'all') {
       filtered = filtered.filter(s => 
         matchesFieldOfStudy(s.field_of_study, filters.field_of_study)
@@ -149,12 +143,11 @@ const HomePage = () => {
       search: '',
       level: 'all',
       field_of_study: 'all',
-      show_inactive: true  // ← Ndryshuar nga false në true
+      show_inactive: true
     });
     setSearchParams({});
   };
 
-  // Pagination
   const indexOfLast = currentPage * scholarshipsPerPage;
   const indexOfFirst = indexOfLast - scholarshipsPerPage;
   const currentScholarships = filteredScholarships.slice(indexOfFirst, indexOfLast);
@@ -172,6 +165,7 @@ const HomePage = () => {
       <Hero searchQuery={filters.search} setSearchQuery={(query) => handleFilterChange({ search: query })} />
       
       <div className="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        
         <FilterBar
           filters={filters}
           onFilterChange={handleFilterChange}
@@ -200,7 +194,7 @@ const HomePage = () => {
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">No scholarships found</h3>
             <p className="text-gray-600 dark:text-gray-400">
               {(filters.level !== 'all' || filters.field_of_study !== 'all') 
-                ? `No scholarships match your filters. Try different criteria.`
+                ? 'No scholarships match your filters. Try different criteria.'
                 : 'Try changing your search filters'}
             </p>
             <button
@@ -229,7 +223,39 @@ const HomePage = () => {
         )}
       </div>
 
+      {/* Email Subscription Button - Near Footer */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-8">
+        <button
+          onClick={() => setShowModal(true)}
+          className="group relative w-full overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 p-[2px] hover:shadow-xl transition-all duration-300"
+        >
+          <div className="relative flex items-center justify-center gap-3 rounded-xl bg-white dark:bg-gray-900 px-6 py-4 transition-all duration-300 group-hover:bg-opacity-90">
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <div className="absolute inset-0 bg-yellow-400 rounded-full blur-md opacity-60 animate-pulse"></div>
+                <span className="relative text-2xl">📧</span>
+              </div>
+              <div className="text-left">
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Stay Updated</p>
+                <p className="text-base font-semibold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+                  Get notified about new scholarships
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-1 text-blue-600 dark:text-blue-400 group-hover:gap-2 transition-all duration-300">
+              <span className="text-sm font-medium">Subscribe</span>
+              <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </div>
+          </div>
+        </button>
+      </div>
+
       <Footer />
+      
+      {/* Email Modal */}
+      <EmailModal isOpen={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 };
