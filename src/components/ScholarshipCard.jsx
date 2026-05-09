@@ -26,8 +26,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
           category: 'Scholarship',
           action: 'Card View Duration',
           label: scholarship.title,
-          value: viewDuration,
-          nonInteraction: true
+          value: viewDuration
         });
       }
       setViewStartTime(null);
@@ -80,7 +79,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
   const handleCardClick = () => {
     ReactGA.event({
       category: 'Scholarship',
-      action: 'view_item',
+      action: 'View Details',
       label: scholarship.title,
       value: scholarship.id
     });
@@ -96,7 +95,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
       category: 'Engagement',
       action: isFavorite ? 'Remove from Favorites' : 'Add to Favorites',
       label: scholarship.title,
-      value: scholarship.id
+      value: 1
     });
     
     toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
@@ -111,7 +110,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
       category: 'Engagement',
       action: 'Open Share Menu',
       label: scholarship.title,
-      value: scholarship.id
+      value: 1
     });
   };
 
@@ -127,7 +126,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
         category: 'Share',
         action: 'Copy Link',
         label: scholarship.title,
-        value: scholarship.id
+        value: 1
       });
       
       toast.success('Link copied to clipboard!');
@@ -147,7 +146,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
       category: 'Share',
       action: `Share to ${platform}`,
       label: scholarship.title,
-      value: scholarship.id
+      value: 1
     });
     
     let shareUrl = '';
@@ -175,7 +174,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
     setIsShareOpen(false);
   };
 
-  // ✅ KLIKIMI NË BUTONIN APPLY
+  // ✅ KLIKIMI NË BUTONIN APPLY NOW
   const handleApplyClick = (e) => {
     e.stopPropagation();
     
@@ -183,7 +182,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
       category: 'Conversion',
       action: 'Click Apply Now',
       label: scholarship.title,
-      value: scholarship.id
+      value: 1
     });
     
     window.open(scholarship.official_link || scholarship.contact_website, '_blank');

@@ -1,3 +1,4 @@
+// src/main.jsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, useLocation } from 'react-router-dom';
@@ -10,12 +11,12 @@ import './index.css';
 // 1. GDPR Consent (Pëlqimi për cookie)
 // ============================================
 const checkGDPRConsent = () => {
+  // Për testim lokal, kthe gjithmonë true (aktivizo GA)
+  if (import.meta.env.DEV) return true;
+  
   const consent = localStorage.getItem('ga_consent');
   if (consent === 'accepted') return true;
   if (consent === 'rejected') return false;
-  
-  // Nëse është testim lokal, mos pyet
-  if (import.meta.env.DEV) return true;
   
   const userConsent = window.confirm(
     'This website uses Google Analytics to analyze traffic and improve user experience. Do you accept?'
@@ -51,7 +52,9 @@ const TrackPageViews = () => {
 export const trackEvent = (category, action, label = null, value = null) => {
   const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
   if (GA_MEASUREMENT_ID && checkGDPRConsent()) {
-    ReactGA.event({ category, action, label, value });
+    // Sigurohu që value është Number (jo string)
+    const numericValue = typeof value === 'number' ? value : (value ? 1 : null);
+    ReactGA.event({ category, action, label, value: numericValue });
   }
 };
 
@@ -61,19 +64,19 @@ export const trackScholarshipView = (title, source) => {
 };
 
 export const trackSubscription = (email) => {
-  trackEvent('User', 'Subscribe', 'Email Subscription', 1);
+  trackEvent('User', 'generate_lead', 'Email Subscription', 1);
 };
 
 export const trackFilter = (filterType, filterValue) => {
-  trackEvent('Search', 'Apply Filter', `${filterType}: ${filterValue}`);
+  trackEvent('Search', 'Apply Filter', `${filterType}: ${filterValue}`, 1);
 };
 
 export const trackSearch = (searchTerm, resultsCount) => {
-  trackEvent('Search', 'Search', searchTerm, resultsCount);
+  trackEvent('Search', 'Search Query', searchTerm, resultsCount || 1);
 };
 
 // ============================================
-// 4. Inicializimi
+// 4. Inicializimi i Google Analytics
 // ============================================
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
 const userAccepted = checkGDPRConsent();
