@@ -1,5 +1,7 @@
+// src/components/FilterBar.jsx
 import React, { useState } from 'react';
 import { Search, Filter, X, ChevronDown, ChevronUp, GraduationCap, BookOpen } from 'lucide-react';
+import ReactGA from 'react-ga4';
 
 export default function FilterBar({ filters, onFilterChange, onReset, options, resultsCount }) {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -22,6 +24,56 @@ export default function FilterBar({ filters, onFilterChange, onReset, options, r
     return option ? option.label : 'All';
   };
 
+  // ============================================
+  // FUNKSIONI PËR NDRYSHIMIN E FILTRAVE (ME GOOGLE ANALYTICS)
+  // ============================================
+  const handleFilterChange = (newFilters) => {
+    // ✅ GOOGLE ANALYTICS - Event për filtrim sipas nivelit
+    if (newFilters.level !== undefined && newFilters.level !== filters.level) {
+      ReactGA.event({
+        category: 'Search',
+        action: 'Apply Filter',
+        label: 'Level',
+        value: newFilters.level
+      });
+    }
+    
+    // ✅ GOOGLE ANALYTICS - Event për filtrim sipas fushës
+    if (newFilters.field_of_study !== undefined && newFilters.field_of_study !== filters.field_of_study) {
+      ReactGA.event({
+        category: 'Search',
+        action: 'Apply Filter',
+        label: 'Field of Study',
+        value: newFilters.field_of_study
+      });
+    }
+    
+    // ✅ GOOGLE ANALYTICS - Event për kërkim
+    if (newFilters.search !== undefined && newFilters.search !== filters.search) {
+      ReactGA.event({
+        category: 'Search',
+        action: 'Search Query',
+        label: 'Search',
+        value: newFilters.search?.length || 0
+      });
+    }
+    
+    onFilterChange(newFilters);
+  };
+
+  // ============================================
+  // FUNKSIONI PËR RIVENDOSJEN E FILTRAVE (ME GOOGLE ANALYTICS)
+  // ============================================
+  const handleReset = () => {
+    // ✅ GOOGLE ANALYTICS - Event për rivendosjen e filtrave
+    ReactGA.event({
+      category: 'Search',
+      action: 'Reset Filters',
+      label: 'All filters cleared'
+    });
+    onReset();
+  };
+
   return (
     <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 overflow-hidden mb-8 transition-all duration-300">
       {/* Search Bar - Hero Style */}
@@ -33,12 +85,12 @@ export default function FilterBar({ filters, onFilterChange, onReset, options, r
           type="text"
           placeholder="🔍 Search scholarships by title, description, or field..."
           value={filters.search || ''}
-          onChange={(e) => onFilterChange({ search: e.target.value })}
+          onChange={(e) => handleFilterChange({ search: e.target.value })}
           className="block w-full pl-11 pr-4 py-4 border-0 bg-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 focus:ring-0 focus:outline-none text-base"
         />
         {filters.search && (
           <button
-            onClick={() => onFilterChange({ search: '' })}
+            onClick={() => handleFilterChange({ search: '' })}
             className="absolute inset-y-0 right-0 pr-4 flex items-center"
           >
             <X className="h-4 w-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors" />
@@ -54,7 +106,7 @@ export default function FilterBar({ filters, onFilterChange, onReset, options, r
               <GraduationCap className="w-3 h-3" />
               {getSelectedLabel(filters.level, levelOptions)}
               <button
-                onClick={() => onFilterChange({ level: 'all' })}
+                onClick={() => handleFilterChange({ level: 'all' })}
                 className="ml-1 hover:bg-white/20 rounded-full p-0.5 transition-colors"
               >
                 <X className="w-3 h-3" />
@@ -66,7 +118,7 @@ export default function FilterBar({ filters, onFilterChange, onReset, options, r
               <BookOpen className="w-3 h-3" />
               {filters.field_of_study}
               <button
-                onClick={() => onFilterChange({ field_of_study: 'all' })}
+                onClick={() => handleFilterChange({ field_of_study: 'all' })}
                 className="ml-1 hover:bg-white/20 rounded-full p-0.5 transition-colors"
               >
                 <X className="w-3 h-3" />
@@ -75,7 +127,7 @@ export default function FilterBar({ filters, onFilterChange, onReset, options, r
           )}
           {hasActiveFilters && (
             <button
-              onClick={onReset}
+              onClick={handleReset}
               className="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs rounded-full font-medium hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400 transition-all"
             >
               <X className="w-3 h-3" />
@@ -88,7 +140,7 @@ export default function FilterBar({ filters, onFilterChange, onReset, options, r
       {/* Expand/Collapse Button */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-200"
+        className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration 200"
       >
         <div className="flex items-center gap-2">
           <div className={`p-1 rounded-lg transition-all duration-300 ${isExpanded ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600' : 'text-gray-500'}`}>
@@ -126,7 +178,7 @@ export default function FilterBar({ filters, onFilterChange, onReset, options, r
               <div className="relative">
                 <select
                   value={filters.level}
-                  onChange={(e) => onFilterChange({ level: e.target.value })}
+                  onChange={(e) => handleFilterChange({ level: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white appearance-none cursor-pointer transition-all hover:border-blue-400"
                 >
                   {levelOptions.map(opt => (
@@ -150,7 +202,7 @@ export default function FilterBar({ filters, onFilterChange, onReset, options, r
               <div className="relative">
                 <select
                   value={filters.field_of_study}
-                  onChange={(e) => onFilterChange({ field_of_study: e.target.value })}
+                  onChange={(e) => handleFilterChange({ field_of_study: e.target.value })}
                   className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white appearance-none cursor-pointer transition-all hover:border-purple-400"
                   disabled={!options.fields || options.fields.length === 0}
                 >

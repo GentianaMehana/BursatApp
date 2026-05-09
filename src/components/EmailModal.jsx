@@ -1,6 +1,7 @@
 // src/components/EmailModal.jsx
 import { useState, useEffect } from 'react';
 import { toast } from 'react-hot-toast';
+import ReactGA from 'react-ga4';
 
 const EmailModal = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
@@ -130,7 +131,6 @@ const EmailModal = ({ isOpen, onClose }) => {
       }
       
       if (response.status === 409) {
-        // Konflikt - emaili ekziston, provo ta riaktivizosh
         return await reactivateSubscription(emailToSubscribe);
       }
       
@@ -145,7 +145,7 @@ const EmailModal = ({ isOpen, onClose }) => {
   };
 
   // ============================================
-  // FUNKSIONI KRYESOR PËR SUBMIT
+  // FUNKSIONI KRYESOR PËR SUBMIT (ME GOOGLE ANALYTICS)
   // ============================================
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -164,7 +164,6 @@ const EmailModal = ({ isOpen, onClose }) => {
     setLoading(true);
 
     try {
-      // Kontrollo nëse emaili ekziston
       const { exists, isActive } = await checkSubscription(email.toLowerCase());
       
       if (exists) {
@@ -173,9 +172,15 @@ const EmailModal = ({ isOpen, onClose }) => {
           setLoading(false);
           return;
         } else {
-          // RIAKTIVO - ishte i çabonuar
           const success = await reactivateSubscription(email.toLowerCase());
           if (success) {
+            // ✅ GOOGLE ANALYTICS - Event për riaktivizim
+            ReactGA.event({
+              category: 'User',
+              action: 'Reactivate Subscription',
+              label: email.toLowerCase(),
+              value: 1
+            });
             toast.success('✅ Successfully re-subscribed to notifications!');
             localStorage.setItem('emailSubscribed', 'true');
             setEmail('');
@@ -188,10 +193,16 @@ const EmailModal = ({ isOpen, onClose }) => {
         }
       }
       
-      // Krijo abonim të ri
       const success = await createSubscription(email.toLowerCase());
       
       if (success) {
+        // ✅ GOOGLE ANALYTICS - Event për abonim të ri (generate_lead)
+        ReactGA.event({
+          category: 'User',
+          action: 'generate_lead',
+          label: 'Email Subscription',
+          value: 1
+        });
         toast.success('✅ Successfully subscribed to notifications!');
         localStorage.setItem('emailSubscribed', 'true');
         setEmail('');
@@ -212,19 +223,15 @@ const EmailModal = ({ isOpen, onClose }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-black/80 backdrop-blur-md transition-all duration-300"
         onClick={onClose}
       />
       
-      {/* Modal */}
       <div className="relative bg-white dark:bg-gray-900 rounded-3xl shadow-2xl max-w-md w-full mx-auto overflow-hidden transform transition-all duration-300 animate-slide-up">
         
-        {/* Decorative top gradient */}
         <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"></div>
         
-        {/* Close button */}
         <button
           onClick={onClose}
           className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all duration-200 z-10"
@@ -234,9 +241,7 @@ const EmailModal = ({ isOpen, onClose }) => {
           </svg>
         </button>
 
-        {/* Content */}
         <div className="p-8">
-          {/* Icon with pulsing animation */}
           <div className="relative mb-6">
             <div className="absolute inset-0 bg-blue-400 rounded-full blur-xl opacity-30 animate-pulse"></div>
             <div className="relative w-24 h-24 bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 rounded-2xl flex items-center justify-center mx-auto shadow-xl transform rotate-3 hover:rotate-6 transition-transform duration-300">
@@ -299,7 +304,6 @@ const EmailModal = ({ isOpen, onClose }) => {
             </button>
           </form>
 
-          {/* Feature list */}
           <div className="mt-6 grid grid-cols-2 gap-3">
             <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
               <svg className="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">

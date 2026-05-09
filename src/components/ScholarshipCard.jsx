@@ -1,5 +1,4 @@
-// ScholarshipCard.jsx - KODI I PLOTË ME EVENTE TË AVANCUARA PËR GA
-
+// src/components/ScholarshipCard.jsx
 import { useNavigate } from 'react-router-dom';
 import { Heart, Calendar, MapPin, BookOpen, Clock, ChevronRight, Share2, Check, Link as LinkIcon, Mail, ExternalLink, Award } from 'lucide-react';
 import { FaFacebook, FaTwitter, FaLinkedin, FaWhatsapp } from 'react-icons/fa';
@@ -22,7 +21,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
       setViewStartTime(Date.now());
     } else if (viewStartTime) {
       const viewDuration = Math.round((Date.now() - viewStartTime) / 1000);
-      if (viewDuration >= 5) { // Vetëm nëse shikohet për 5+ sekonda
+      if (viewDuration >= 5) {
         ReactGA.event({
           category: 'Scholarship',
           action: 'Card View Duration',
@@ -51,7 +50,6 @@ const ScholarshipCard = ({ scholarship, index }) => {
 
   const deadlineStatus = getDeadlineStatus(scholarship.deadline);
 
-  // Funksioni për të nxjerrë tekst të shkurtër të duration
   const getShortDuration = (duration) => {
     if (!duration || duration === 'Check announcement') return null;
     
@@ -74,18 +72,22 @@ const ScholarshipCard = ({ scholarship, index }) => {
     return duration.length > 60 ? duration.substring(0, 60) + '...' : duration;
   };
 
+  // ============================================
+  // FUNKSIONET ME GOOGLE ANALYTICS
+  // ============================================
+
+  // ✅ KLIKIMI NË KARTELË (VIEW ITEM)
   const handleCardClick = () => {
     ReactGA.event({
       category: 'Scholarship',
-      action: 'View Details',
+      action: 'view_item',
       label: scholarship.title,
-      value: scholarship.id,
-      dimension1: scholarship.source_name, // Burimi i bursës
-      dimension2: scholarship.level?.join(', ') // Nivelet
+      value: scholarship.id
     });
     navigate(`/scholarship/${scholarship.id}`);
   };
 
+  // ✅ TË PREFERUARAT (FAVORITE)
   const handleFavorite = (e) => {
     e.stopPropagation();
     setIsFavorite(!isFavorite);
@@ -94,13 +96,13 @@ const ScholarshipCard = ({ scholarship, index }) => {
       category: 'Engagement',
       action: isFavorite ? 'Remove from Favorites' : 'Add to Favorites',
       label: scholarship.title,
-      value: scholarship.id,
-      dimension1: scholarship.source_name
+      value: scholarship.id
     });
     
     toast.success(isFavorite ? 'Removed from favorites' : 'Added to favorites');
   };
 
+  // ✅ HAPJA E MENYSË PËR SHARE
   const handleShare = (e) => {
     e.stopPropagation();
     setIsShareOpen(!isShareOpen);
@@ -113,6 +115,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
     });
   };
 
+  // ✅ KOPJIMI I LINK-UT
   const copyToClipboard = async (e) => {
     e.stopPropagation();
     const url = `${window.location.origin}/scholarship/${scholarship.id}`;
@@ -124,8 +127,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
         category: 'Share',
         action: 'Copy Link',
         label: scholarship.title,
-        value: scholarship.id,
-        dimension1: 'clipboard'
+        value: scholarship.id
       });
       
       toast.success('Link copied to clipboard!');
@@ -135,6 +137,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
     }
   };
 
+  // ✅ NDARJA NË RRJETET SOCIALE
   const shareToSocial = (platform, e) => {
     e.stopPropagation();
     const url = `${window.location.origin}/scholarship/${scholarship.id}`;
@@ -144,8 +147,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
       category: 'Share',
       action: `Share to ${platform}`,
       label: scholarship.title,
-      value: scholarship.id,
-      dimension1: platform
+      value: scholarship.id
     });
     
     let shareUrl = '';
@@ -173,6 +175,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
     setIsShareOpen(false);
   };
 
+  // ✅ KLIKIMI NË BUTONIN APPLY
   const handleApplyClick = (e) => {
     e.stopPropagation();
     
@@ -180,9 +183,7 @@ const ScholarshipCard = ({ scholarship, index }) => {
       category: 'Conversion',
       action: 'Click Apply Now',
       label: scholarship.title,
-      value: scholarship.id,
-      dimension1: scholarship.source_name,
-      dimension2: scholarship.official_link || scholarship.contact_website
+      value: scholarship.id
     });
     
     window.open(scholarship.official_link || scholarship.contact_website, '_blank');
@@ -356,7 +357,6 @@ const ScholarshipCard = ({ scholarship, index }) => {
 
         {/* Footer with CTA */}
         <div className="pt-3 border-t border-gray-100 dark:border-gray-700">
-          {/* Scholarship Value - si badge */}
           {scholarship.scholarship_value && scholarship.scholarship_value !== 'Check announcement' && (
             <div className="mb-2">
               <span className="inline-flex items-center gap-1 px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs rounded-lg font-semibold">
@@ -369,7 +369,6 @@ const ScholarshipCard = ({ scholarship, index }) => {
           )}
           
           <div className="flex items-center justify-between">
-            {/* Duration - me tekst të shkurtër */}
             {scholarship.duration && scholarship.duration !== 'Check announcement' && (
               <div className="flex items-center gap-1 text-xs text-gray-500 dark:text-gray-400 min-w-0">
                 <Clock className="w-3 h-3 flex-shrink-0" />
