@@ -25,36 +25,36 @@ export default function FilterBar({ filters, onFilterChange, onReset, options, r
   };
 
   // ============================================
-  // FUNKSIONI PËR NDRYSHIMIN E FILTRAVE (ME GOOGLE ANALYTICS)
+  // FUNKSIONI PËR NDRYSHIMIN E FILTRAVE (ME GOOGLE ANALYTICS - I RREGULLUAR)
   // ============================================
   const handleFilterChange = (newFilters) => {
-    // ✅ GOOGLE ANALYTICS - Event për filtrim sipas nivelit
+    // ✅ GOOGLE ANALYTICS - Event për filtrim sipas nivelit (value = 1, numër)
     if (newFilters.level !== undefined && newFilters.level !== filters.level) {
       ReactGA.event({
         category: 'Search',
         action: 'Apply Filter',
         label: 'Level',
-        value: newFilters.level
+        value: 1
       });
     }
     
-    // ✅ GOOGLE ANALYTICS - Event për filtrim sipas fushës
+    // ✅ GOOGLE ANALYTICS - Event për filtrim sipas fushës (value = 1, numër)
     if (newFilters.field_of_study !== undefined && newFilters.field_of_study !== filters.field_of_study) {
       ReactGA.event({
         category: 'Search',
         action: 'Apply Filter',
         label: 'Field of Study',
-        value: newFilters.field_of_study
+        value: 1
       });
     }
     
-    // ✅ GOOGLE ANALYTICS - Event për kërkim
+    // ✅ GOOGLE ANALYTICS - Event për kërkim (value = 1, numër)
     if (newFilters.search !== undefined && newFilters.search !== filters.search) {
       ReactGA.event({
         category: 'Search',
         action: 'Search Query',
-        label: 'Search',
-        value: newFilters.search?.length || 0
+        label: newFilters.search || 'empty',
+        value: 1
       });
     }
     
@@ -62,14 +62,15 @@ export default function FilterBar({ filters, onFilterChange, onReset, options, r
   };
 
   // ============================================
-  // FUNKSIONI PËR RIVENDOSJEN E FILTRAVE (ME GOOGLE ANALYTICS)
+  // FUNKSIONI PËR RIVENDOSJEN E FILTRAVE (ME GOOGLE ANALYTICS - I RREGULLUAR)
   // ============================================
   const handleReset = () => {
-    // ✅ GOOGLE ANALYTICS - Event për rivendosjen e filtrave
+    // ✅ GOOGLE ANALYTICS - Event për rivendosjen e filtrave (value = 1, numër)
     ReactGA.event({
       category: 'Search',
       action: 'Reset Filters',
-      label: 'All filters cleared'
+      label: 'All filters cleared',
+      value: 1
     });
     onReset();
   };
@@ -140,7 +141,7 @@ export default function FilterBar({ filters, onFilterChange, onReset, options, r
       {/* Expand/Collapse Button */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration 200"
+        className="w-full px-4 py-3 flex items-center justify-between bg-gray-50 dark:bg-gray-800/50 hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-all duration-200"
       >
         <div className="flex items-center gap-2">
           <div className={`p-1 rounded-lg transition-all duration-300 ${isExpanded ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600' : 'text-gray-500'}`}>
