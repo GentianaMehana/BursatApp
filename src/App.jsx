@@ -1,5 +1,5 @@
 // src/App.jsx
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { Toaster } from 'react-hot-toast';
 import ReactGA from 'react-ga4';
@@ -16,7 +16,8 @@ function RouteChangeTracker() {
   const location = useLocation();
 
   useEffect(() => {
-    if (typeof ReactGA.ga === 'function') {
+    const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
+    if (GA_MEASUREMENT_ID && typeof ReactGA.ga === 'function') {
       ReactGA.send({ 
         hitType: "pageview", 
         page: location.pathname + location.search 
@@ -30,7 +31,7 @@ function RouteChangeTracker() {
 
 function App() {
   return (
-    <Router>
+    <>
       <RouteChangeTracker />
       <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <Routes>
@@ -73,7 +74,7 @@ function App() {
           }}
         />
       </div>
-    </Router>
+    </>
   );
 }
 
