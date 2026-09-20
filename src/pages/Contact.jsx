@@ -1,160 +1,175 @@
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ArrowLeft, Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
+// src/pages/Contact.jsx
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import { ArrowLeft, Mail, Phone, MapPin, Send, MessageSquare } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 const Contact = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  });
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' });
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // In a real app, you would send this to an API
-    toast.success('Message sent successfully! We will get back to you soon.');
+    toast.success('Message sent. We\'ll get back to you soon.');
     setFormData({ name: '', email: '', subject: '', message: '' });
   };
 
+  const set = (field) => (e) => setFormData({ ...formData, [field]: e.target.value });
+
+  const contactInfo = [
+    { icon: Mail, label: 'Email', value: 'mehanagenta@gmail.com', href: 'mailto:mehanagenta@gmail.com' },
+    { icon: Phone, label: 'Phone', value: '+383 49 427 478', href: 'tel:+38349427478' },
+    { icon: MapPin, label: 'Location', value: 'Kosovo' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Link to="/" className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 mb-8">
-          <ArrowLeft className="w-5 h-5" />
-          Back to Home
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-colors mb-8"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to home
         </Link>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8"
-        >
-          {/* Contact Info */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Contact Us</h1>
-            <p className="text-gray-600 dark:text-gray-400 mb-8">
-              Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.
-            </p>
+        <header className="mb-10">
+          <div className="w-11 h-11 rounded-xl bg-brand-50 dark:bg-brand-950/50 flex items-center justify-center mb-4">
+            <MessageSquare className="w-5 h-5 text-brand-600 dark:text-brand-400" />
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white tracking-tight mb-2">
+            Get in touch
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400">
+            Have questions? We'd love to hear from you.
+          </p>
+        </header>
 
-            <div className="space-y-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                  <Mail className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Email</p>
-                  <a href="mailto:mehanagenta@gmail.com" className="text-gray-900 dark:text-white hover:text-blue-600">
-                    mehanagenta@gmail.com
-                  </a>
-                </div>
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+          {/* Contact info */}
+          <div className="lg:col-span-2 space-y-3">
+            {contactInfo.map(({ icon: Icon, label, value, href }) => {
+              const inner = (
+                <>
+                  <div className="w-10 h-10 rounded-lg bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center flex-shrink-0">
+                    <Icon className="w-4 h-4 text-brand-600 dark:text-brand-400" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-xs text-slate-500 dark:text-slate-400 uppercase tracking-wide">{label}</div>
+                    <div className="text-sm font-medium text-slate-900 dark:text-white truncate">{value}</div>
+                  </div>
+                </>
+              );
 
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                  <Phone className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Phone</p>
-                  <a href="tel:+38349427478" className="text-gray-900 dark:text-white hover:text-blue-600">
-                    +383 49 427 478
-                  </a>
-                </div>
-              </div>
+              const baseClass = "flex items-center gap-3 p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 transition-colors";
+              return href ? (
+                <a key={label} href={href} className={`${baseClass} hover:border-brand-300 dark:hover:border-brand-700`}>
+                  {inner}
+                </a>
+              ) : (
+                <div key={label} className={baseClass}>{inner}</div>
+              );
+            })}
 
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                  <MapPin className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Location</p>
-                  <p className="text-gray-900 dark:text-white">Kosovo</p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                  <Clock className="w-6 h-6 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500 dark:text-gray-400">Response Time</p>
-                  <p className="text-gray-900 dark:text-white">Within 24-48 hours</p>
-                </div>
-              </div>
+            <div className="p-4 bg-brand-50 dark:bg-brand-950/30 rounded-xl border border-brand-100 dark:border-brand-900/50">
+              <p className="text-xs text-brand-700 dark:text-brand-300 leading-relaxed">
+                We typically respond within 24–48 hours on business days.
+              </p>
             </div>
           </div>
 
-          {/* Contact Form */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8">
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Send us a Message</h2>
+          {/* Form */}
+          <div className="lg:col-span-3 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 md:p-8">
             <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Your Name
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <Field label="Name">
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={set('name')}
+                    placeholder="Your name"
+                    className="input-base"
+                  />
+                </Field>
+                <Field label="Email">
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={set('email')}
+                    placeholder="you@example.com"
+                    className="input-base"
+                  />
+                </Field>
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Your Email
-                </label>
-                <input
-                  type="email"
-                  required
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Subject
-                </label>
+              <Field label="Subject">
                 <input
                   type="text"
                   required
                   value={formData.subject}
-                  onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  onChange={set('subject')}
+                  placeholder="What's this about?"
+                  className="input-base"
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                  Message
-                </label>
+              <Field label="Message">
                 <textarea
                   rows="5"
                   required
                   value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                  onChange={set('message')}
+                  placeholder="Write your message..."
+                  className="input-base resize-none"
                 />
-              </div>
+              </Field>
 
               <button
                 type="submit"
-                className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center justify-center gap-2"
+                className="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white text-sm font-semibold rounded-lg transition-colors inline-flex items-center justify-center gap-2 group"
               >
-                <Send className="w-4 h-4" />
-                Send Message
+                <Send className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                Send message
               </button>
             </form>
           </div>
-        </motion.div>
+        </div>
       </div>
+
+      <style>{`
+        .input-base {
+          width: 100%;
+          padding: 0.625rem 0.875rem;
+          font-size: 0.875rem;
+          border-radius: 0.5rem;
+          border: 1px solid rgb(226 232 240);
+          background-color: white;
+          color: rgb(15 23 42);
+          outline: none;
+          transition: all 0.15s;
+        }
+        .input-base::placeholder { color: rgb(148 163 184); }
+        .input-base:focus {
+          border-color: rgb(99 102 241);
+          box-shadow: 0 0 0 3px rgb(99 102 241 / 0.1);
+        }
+        .dark .input-base {
+          background-color: rgb(30 41 59);
+          border-color: rgb(51 65 85);
+          color: white;
+        }
+        .dark .input-base:focus { border-color: rgb(129 140 248); }
+      `}</style>
     </div>
   );
 };
+
+const Field = ({ label, children }) => (
+  <div>
+    <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1.5">{label}</label>
+    {children}
+  </div>
+);
 
 export default Contact;

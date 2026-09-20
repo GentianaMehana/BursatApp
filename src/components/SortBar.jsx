@@ -1,42 +1,25 @@
-import { ArrowUpDown, Calendar, Clock, TrendingUp } from 'lucide-react';
-import { motion } from 'framer-motion';
+// src/components/SortBar.jsx
+import { ArrowUpDown } from 'lucide-react';
 
-const SortBar = ({ sortBy, onSortChange }) => {
-  const sortOptions = [
-    { value: 'deadline_asc', label: 'Deadline (Earliest First)', icon: Calendar },
-    { value: 'deadline_desc', label: 'Deadline (Latest First)', icon: Calendar },
-    { value: 'title_asc', label: 'Title (A-Z)', icon: ArrowUpDown },
-    { value: 'title_desc', label: 'Title (Z-A)', icon: ArrowUpDown },
-    { value: 'relevance', label: 'Most Relevant', icon: TrendingUp },
-  ];
+const SORT_OPTIONS = [
+  { value: 'deadline_asc',  label: 'Deadline · Soonest' },
+  { value: 'deadline_desc', label: 'Deadline · Latest' },
+  { value: 'title_asc',     label: 'Title · A–Z' },
+  { value: 'title_desc',    label: 'Title · Z–A' },
+  { value: 'relevance',     label: 'Most relevant' },
+];
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      className="flex items-center gap-3"
+const SortBar = ({ sortBy, onSortChange }) => (
+  <div className="flex items-center gap-2">
+    <ArrowUpDown className="w-3.5 h-3.5 text-[#8a929f]" />
+    <select
+      value={sortBy}
+      onChange={(e) => onSortChange(e.target.value)}
+      className="px-3 py-1.5 rounded-lg border border-[#e4e6eb] dark:border-[#242832] bg-white dark:bg-[#14161b] text-[#4a5160] dark:text-[#98a2b0] text-xs font-medium focus:outline-none focus:border-[#0f1115] dark:focus:border-[#f7f8fa] cursor-pointer transition-colors"
     >
-      <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-        <Clock className="w-4 h-4" />
-        <span className="text-sm font-medium">Sort by:</span>
-      </div>
-      
-      <div className="relative">
-        <select
-          value={sortBy}
-          onChange={(e) => onSortChange(e.target.value)}
-          className="px-4 py-2 pr-10 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500 appearance-none cursor-pointer"
-        >
-          {sortOptions.map(option => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-        <ArrowUpDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
-      </div>
-    </motion.div>
-  );
-};
+      {SORT_OPTIONS.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+    </select>
+  </div>
+);
 
 export default SortBar;

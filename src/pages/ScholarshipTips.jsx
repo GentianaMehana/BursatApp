@@ -1,74 +1,73 @@
-import { motion } from 'framer-motion';
+// src/pages/ScholarshipTips.jsx
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Target, PenTool, Users, Clock, Award, TrendingUp } from 'lucide-react';
+import { ArrowLeft, Target, PenTool, Users, Clock, Award, TrendingUp, Sparkles } from 'lucide-react';
 
 const ScholarshipTips = () => {
   const tips = [
-    {
-      icon: Target,
-      title: 'Start Early',
-      description: 'Begin your scholarship search at least 6-12 months before your intended start date. Many scholarships have early deadlines.'
-    },
-    {
-      icon: PenTool,
-      title: 'Write a Strong Motivation Letter',
-      description: 'Tailor each motivation letter to the specific scholarship. Highlight your achievements, goals, and why you deserve the scholarship.'
-    },
-    {
-      icon: Users,
-      title: 'Get Strong Recommendations',
-      description: 'Ask professors or employers who know you well to write recommendation letters. Give them plenty of time and provide them with your CV.'
-    },
-    {
-      icon: Clock,
-      title: 'Meet All Deadlines',
-      description: 'Create a calendar with all scholarship deadlines. Submit your applications well before the deadline to avoid technical issues.'
-    },
-    {
-      icon: Award,
-      title: 'Highlight Your Achievements',
-      description: 'Showcase your academic achievements, extracurricular activities, volunteer work, and leadership experience.'
-    },
-    {
-      icon: TrendingUp,
-      title: 'Apply to Multiple Scholarships',
-      description: 'Don\'t put all your eggs in one basket. Apply to as many scholarships as you qualify for to increase your chances.'
-    }
+    { icon: Target, title: 'Start early', description: 'Begin your scholarship search at least 6–12 months before your intended start date. Many scholarships have early deadlines.' },
+    { icon: PenTool, title: 'Write a strong motivation letter', description: 'Tailor each motivation letter to the specific scholarship. Highlight your achievements, goals, and why you deserve it.' },
+    { icon: Users, title: 'Get strong recommendations', description: 'Ask professors or employers who know you well to write recommendation letters. Give them plenty of time.' },
+    { icon: Clock, title: 'Meet all deadlines', description: 'Create a calendar with all scholarship deadlines. Submit your applications well before the deadline to avoid issues.' },
+    { icon: Award, title: 'Highlight your achievements', description: 'Showcase your academic achievements, extracurricular activities, volunteer work, and leadership experience.' },
+    { icon: TrendingUp, title: 'Apply to multiple scholarships', description: 'Don\'t put all your eggs in one basket. Apply to as many scholarships as you qualify for to increase your chances.' },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <Link to="/" className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-blue-600 mb-8">
-          <ArrowLeft className="w-5 h-5" />
-          Back to Home
+    <div className="min-h-screen">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <Link
+          to="/"
+          className="inline-flex items-center gap-2 text-sm font-medium text-[#4a5160] dark:text-[#8a929f] hover:text-[#0f1115] dark:hover:text-[#f7f8fa] transition-colors mb-8"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to home
         </Link>
 
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8"
-        >
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Scholarship Tips & Advice</h1>
-          <p className="text-gray-600 dark:text-gray-400 mb-8">
-            Expert tips to help you succeed in your scholarship applications.
-          </p>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {tips.map((tip, index) => {
-              const Icon = tip.icon;
-              return (
-                <div key={index} className="bg-gray-50 dark:bg-gray-700/50 rounded-xl p-6">
-                  <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-4">
-                    <Icon className="w-6 h-6 text-green-600 dark:text-green-400" />
-                  </div>
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">{tip.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm">{tip.description}</p>
-                </div>
-              );
-            })}
+        <header className="mb-10">
+          <div className="w-11 h-11 rounded-xl bg-blue-50 dark:bg-blue-950/40 flex items-center justify-center mb-4">
+            <Sparkles className="w-5 h-5 text-blue-600 dark:text-blue-400" />
           </div>
-        </motion.div>
+          <h1 className="text-3xl md:text-4xl font-bold text-[#0f1115] dark:text-[#f7f8fa] tracking-[-0.02em] mb-2">
+            Scholarship tips
+          </h1>
+          <p className="text-[#6a7280] dark:text-[#5a6270]">
+            Expert advice to help you succeed in your applications.
+          </p>
+        </header>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {tips.map((tip, i) => {
+            const Icon = tip.icon;
+            return (
+              <div
+                key={i}
+                className="group p-5 bg-white dark:bg-[#0d0e12] rounded-xl border border-[#e4e6eb] dark:border-[#1e2026] hover:border-blue-400 dark:hover:border-blue-600 transition-colors"
+              >
+                <div className="w-10 h-10 rounded-lg bg-[#f2f3f5] dark:bg-[#1a1c22] group-hover:bg-blue-50 dark:group-hover:bg-blue-950/40 flex items-center justify-center mb-4 transition-colors">
+                  <Icon className="w-4 h-4 text-[#6a7280] dark:text-[#8a929f] group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" />
+                </div>
+                <h3 className="font-semibold text-[#0f1115] dark:text-[#f7f8fa] mb-1.5">
+                  {tip.title}
+                </h3>
+                <p className="text-sm text-[#6a7280] dark:text-[#5a6270] leading-relaxed">
+                  {tip.description}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="mt-10 p-6 bg-[#0f1115] dark:bg-[#14161b] rounded-xl text-center">
+          <p className="text-sm text-[#8a929f] mb-3">
+            Ready to find your scholarship?
+          </p>
+          <Link
+            to="/"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#f7f8fa] text-[#0f1115] text-sm font-medium rounded-lg hover:bg-white transition-colors"
+          >
+            Browse scholarships
+          </Link>
+        </div>
       </div>
     </div>
   );
